@@ -13,13 +13,13 @@ def save_csv(variable, save_path):
     print("Done.\n")
 
 
-def draw_2D(data, longitude=None, latitude=None):
+def draw_2D(data, longitude=None, latitude=None, save_path=None):
     """
     绘制2D分布图。
     输入相同大小的三个二维矩阵, 经纬度可不填。
     """
     print("Drawing... ")
-    plt.figure(figsize=(12, 9))
+
     if longitude is None and latitude is None:
         plt.imshow(data, cmap='viridis')
         plt.axis('off')
@@ -30,6 +30,12 @@ def draw_2D(data, longitude=None, latitude=None):
     plt.colorbar(label='Speed (m/s)')
     plt.title('Wind speed distribution')
     print("Done.\n")
+
+    if save_path is not None:
+        print("Saving picture...")
+        plt.savefig(save_path)
+        print("Done.")
+
     plt.show()
 
 
@@ -96,12 +102,12 @@ def tif2excel(tif_file, save_path, max_size=16384):
     print("Done.\nConversion successful.")
 
 
-def read_block(tif_file: str, size=2000):
+def read_tif(tif_path: str, size=2000):
     """
     从tif文件中读取块, 返回numpy矩阵。
 
     参数：
-        tif_file: 要读取的tif文件地址。
+        tif_path: 要读取的tif文件地址。
         size: 读取区块的大小，输入类型为：
                 int 从中心取 size * size 大小的块。\n
                 [heigth, width] 从中心取 heigth * width 大小的块。\n
@@ -110,7 +116,7 @@ def read_block(tif_file: str, size=2000):
     print("Reading...")
 
     import rasterio
-    with rasterio.open(tif_file) as src:
+    with rasterio.open(tif_path) as src:
         total_width = src.width
         total_height = src.height
         if isinstance(size, int):
@@ -141,3 +147,8 @@ def read_block(tif_file: str, size=2000):
           f"Total size: {total_height} * {total_width} \n"
           f"Selected size: {height} * {width}\n")
     return data
+
+
+def read_csv(csv_path):
+    data = pd.read_csv(csv_path)
+    return data.to_numpy()
