@@ -19,12 +19,18 @@ def draw_2D(data, longitude=None, latitude=None, save_path=None):
     输入相同大小的三个二维矩阵, 经纬度可不填。
     """
     print("Drawing... ")
+    latitude = np.ma.masked_equal(latitude, 0)
+    longitude = np.ma.masked_equal(longitude, 0)
+
+    x = np.linspace(np.min(longitude), np.max(longitude), longitude.shape[1])
+    y = np.linspace(np.max(latitude), np.min(latitude), latitude.shape[0])
+    X, Y = np.meshgrid(x, y)
 
     if longitude is None and latitude is None:
-        plt.imshow(data, cmap='viridis')
+        plt.imshow(data, cmap='jet')
         plt.axis('off')
     else:
-        plt.pcolormesh(longitude, latitude, data)
+        plt.pcolormesh(X, Y, data, cmap='jet')
         plt.xlabel("longitude")
         plt.ylabel("latitude")
     plt.colorbar(label='Speed (m/s)')
@@ -34,7 +40,7 @@ def draw_2D(data, longitude=None, latitude=None, save_path=None):
     if save_path is not None:
         print("Saving picture...")
         plt.savefig(save_path)
-        print("Done.")
+        print("Done.\n")
 
     plt.show()
 

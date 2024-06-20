@@ -56,18 +56,22 @@ class CMOD():
         return 1 / (1 + np.exp(-s))
 
     def inverse(self, sigma0_obs, phi, incidence, iterations=10):
-        V = np.array([10.]) * np.ones(sigma0_obs.shape)
-        step = 10.
+        sigma0_mask = np.ma.masked_equal(sigma0_obs, 0)
+        incidence_mask = np.ma.masked_equal(incidence, 0)
+        phi_mask = np.ma.masked_array(phi, mask=sigma0_mask.mask)
+        V = np.array([10]) * np.ones(sigma0_obs.shape)
 
+        step = 10
         for iterno in range(iterations):
             print(f"Itering... ({iterno+1}/{iterations})", end='\r')
-            sigma0_calc = self.forward(V, phi, incidence)
-            ind = sigma0_calc - sigma0_obs > 0
+            sigma0_calc = self.forward(V, phi_mask, incidence_mask)
+            ind = sigma0_calc - sigma0_mask > 0
             V = V + step
             V[ind] = V[ind] - 2 * step
-            step = step / 2
+            step /= 2
+        V = np.ma.masked_array(V, mask=sigma0_mask.mask)
         print("\nDone.\n")
-        return V
+        return V.filled(np.nan)
 
 
 class CMOD5_N(CMOD):
@@ -156,18 +160,22 @@ class CMOD4():
 
     def inverse(self, sigma0_obs, phi, incidence, iterations=10):
         self.br = self.get_br(incidence)
-        V = np.array([10.]) * np.ones(sigma0_obs.shape)
-        step = 10.
+        sigma0_mask = np.ma.masked_equal(sigma0_obs, 0)
+        incidence_mask = np.ma.masked_equal(incidence, 0)
+        phi_mask = np.ma.masked_array(phi, mask=sigma0_mask.mask)
+        V = np.array([10]) * np.ones(sigma0_obs.shape)
 
+        step = 10
         for iterno in range(iterations):
             print(f"Itering... ({iterno+1}/{iterations})", end='\r')
-            sigma0_calc = self.forward(V, phi, incidence)
-            ind = sigma0_calc - sigma0_obs > 0
+            sigma0_calc = self.forward(V, phi_mask, incidence_mask)
+            ind = sigma0_calc - sigma0_mask > 0
             V = V + step
             V[ind] = V[ind] - 2 * step
-            step = step / 2
+            step /= 2
+        V = np.ma.masked_array(V, mask=sigma0_mask.mask)
         print("\nDone.\n")
-        return V
+        return V.filled(np.nan)
 
 
 class CMOD_IFR2():
@@ -215,15 +223,19 @@ class CMOD_IFR2():
         return B0, B1, B2
 
     def inverse(self, sigma0_obs, phi, incidence, iterations=10):
-        V = np.array([10.]) * np.ones(sigma0_obs.shape)
-        step = 10.
+        sigma0_mask = np.ma.masked_equal(sigma0_obs, 0)
+        incidence_mask = np.ma.masked_equal(incidence, 0)
+        phi_mask = np.ma.masked_array(phi, mask=sigma0_mask.mask)
+        V = np.array([10]) * np.ones(sigma0_obs.shape)
 
+        step = 10
         for iterno in range(iterations):
             print(f"Itering... ({iterno+1}/{iterations})", end='\r')
-            sigma0_calc = self.forward(V, phi, incidence)
-            ind = sigma0_calc - sigma0_obs > 0
+            sigma0_calc = self.forward(V, phi_mask, incidence_mask)
+            ind = sigma0_calc - sigma0_mask > 0
             V = V + step
             V[ind] = V[ind] - 2 * step
-            step = step / 2
+            step /= 2
+        V = np.ma.masked_array(V, mask=sigma0_mask.mask)
         print("\nDone.\n")
-        return V
+        return V.filled(np.nan)
